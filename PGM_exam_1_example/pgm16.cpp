@@ -1,5 +1,12 @@
 #include "pgm16.h"
 
+uint16_t swap_bytes(char buffer[2]){
+    const char buf = buffer[0];
+    buffer[0] = buffer[1];
+    buffer[1] = buf;
+    return *(reinterpret_cast<uint16_t*>(buffer));
+}
+
 bool load(const std::string& filename, mat<uint16_t>& img, uint16_t& maxvalue){
 
     // open file with filename
@@ -97,5 +104,32 @@ bool load(const std::string& filename, mat<uint16_t>& img, uint16_t& maxvalue){
     fout << "   Max Value: " << maxvalue << fendl << fendl << fendl;
 
     fout << "Reading data..." << fendl;
+    img.resize(height, width);
     
+    size_t stepSize;
+    if(maxvalue < 256)
+        stepSize = 1;
+    else
+        stepSize = 2;
+    
+    char elementBuffer[stepSize];
+
+    for(size_t i = 0; i < height; i++){
+        for(size_t j = 0; j < width; j++){
+            if(inputFile.peek() == EOF){
+                ferr << "Sto cazzo di file finisce ad ultram cazzum" << fendl;
+                return false;
+            }
+            inputFile.read(elementBuffer, stepSize);
+            if(maxvalue < 256){
+                img(i,j) = static_cast<uint16_t>(elementBuffer[0]);
+            } else {
+                img(i,j) = swap_bytes(elementBuffer);
+            }
+            fout << img(i,j) << " ";
+        }
+        fout << fendl;
+    }
+    inputFile.close();
+    return true;
 }
