@@ -117,7 +117,7 @@ bool load(const std::string& filename, mat<uint16_t>& img, uint16_t& maxvalue){
     for(size_t i = 0; i < height; i++){
         for(size_t j = 0; j < width; j++){
             if(inputFile.peek() == EOF){
-                ferr << "Sto cazzo di file finisce ad ultram cazzum" << fendl;
+                ferr << "File finishes too early." << fendl;
                 return false;
             }
             inputFile.read(elementBuffer, stepSize);
@@ -126,9 +126,9 @@ bool load(const std::string& filename, mat<uint16_t>& img, uint16_t& maxvalue){
             } else {
                 img(i,j) = swap_bytes(elementBuffer);
             }
-            fout << img(i,j) << " ";
+            // fout << img(i,j) << " ";
         }
-        fout << fendl;
+        // fout << fendl;
     }
     inputFile.close();
     return true;
